@@ -38,7 +38,7 @@ package org.objectweb.asm;
  * 
  * @author Eric Bruneton
  */
-public class Label {
+public class Label implements IMethodOffsetExtension {
 
     /**
      * Indicates if this label is only used for debug attributes. Such a label
@@ -131,11 +131,7 @@ public class Label {
     int status;
 
     /**
-     * The line number corresponding to this label, if known. If there are
-     * several lines, each line is stored in a separate label, all linked via
-     * their next field (these links are created in ClassReader and removed just
-     * before visitLabel is called, so that this does not impact the rest of the
-     * code).
+     * The line number corresponding to this label, if known.
      */
     int line;
 
@@ -243,8 +239,7 @@ public class Label {
      * The next basic block in the basic block stack. This stack is used in the
      * main loop of the fix point algorithm used in the second step of the
      * control flow analysis algorithms. It is also used in
-     * {@link #visitSubroutine} to avoid using a recursive method, and in 
-     * ClassReader to temporarily store multiple source lines for a label. 
+     * {@link #visitSubroutine} to avoid using a recursive method.
      * 
      * @see MethodWriter#visitMaxs
      */
@@ -253,11 +248,17 @@ public class Label {
     // ------------------------------------------------------------------------
     // Constructor
     // ------------------------------------------------------------------------
-
+    
+    private int fOffsetInMethod;
+    
     /**
      * Constructs a new label.
      */
     public Label() {
+    }
+    
+    public Label(int offsetInMethod) {
+    	fOffsetInMethod = offsetInMethod;
     }
 
     // ------------------------------------------------------------------------
@@ -561,5 +562,9 @@ public class Label {
     @Override
     public String toString() {
         return "L" + System.identityHashCode(this);
+    }
+       
+    public int getOffsetInMethod() {
+        return fOffsetInMethod;
     }
 }
